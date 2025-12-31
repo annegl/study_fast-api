@@ -9,6 +9,6 @@ repos:
 
       - id: python_lint
         name: Python Lint
-        entry: uv run ruff check
+        entry: uv run ruff check --fix
         language: system
         types: [python]
