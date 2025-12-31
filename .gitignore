@@ -5,3 +5,4 @@ uv.lock
 .vscode/
 .ruff_cache
 .python-version
+.coverage
