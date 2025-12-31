@@ -4,4 +4,4 @@ __pycache__/
 uv.lock
 .vscode/
 .ruff_cache
-.pythin-version
+.python-version
