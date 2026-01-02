@@ -1,7 +1,5 @@
-from http import HTTPStatus
-
 from fastapi import FastAPI
-
+from http import HTTPStatus
 from src.schemas import Contact, Message
 
 app = FastAPI(title='Study FastAPI', version='0.1.0')
