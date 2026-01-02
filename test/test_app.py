@@ -7,10 +7,20 @@ from src.app import app
 client = TestClient(app)
 
 
-def test_root_deve_retornar_ok_e_ola_mundo():
+def test_root():
     client = TestClient(app)  # Arrange
-
     response = client.get('/')  # Act
 
     assert response.status_code == HTTPStatus.OK  # Assert
-    assert response.json() == {'message': 'Olá Mundo!'}  # Asset
+    assert response.json() == {
+        'message': 'Hello, you',
+        'description': 'This is me learning FastAPI! =)',
+    }  # Asset
+
+
+def test_contact():
+    client = TestClient(app)
+    response = client.get('/contact/')
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {'contact': 'https://github.com/annegl/'}
