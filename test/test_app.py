@@ -1,12 +1,8 @@
-from fastapi.testclient import TestClient
 from http import HTTPStatus
-from src.app import app
-
-client = TestClient(app)
 
 
-def test_root():
-    client = TestClient(app)  # Arrange
+# include the fixture name as a param in the test function to use it
+def test_root(client):
     response = client.get('/')  # Act
 
     assert response.status_code == HTTPStatus.OK  # Assert
@@ -16,8 +12,7 @@ def test_root():
     }  # Assert
 
 
-def test_creat_user():
-    client = TestClient(app)
+def test_creat_user(client):
     response = client.post(
         '/users/',
         json={
