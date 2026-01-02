@@ -83,6 +83,9 @@ preview = true
 select = ['I', 'F', 'E', 'W', 'PL', 'PT']
 ignore = ['E402', 'F811']
 
+[tool.ruff.lint.isort]
+no-sections = true
+
 [tool.ruff.format]
 preview = true
 quote-style = 'single'
