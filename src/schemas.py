@@ -25,3 +25,7 @@ class UserPublic(BaseModel):  # what goes out
 class UserDB(UserSchema):  # what exists inside the DB
     # UserDB inherits all fields from UserSchema and adds the database id
     id: int
+
+
+class UserList(BaseModel):
+    users: list[UserPublic]

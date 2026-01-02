@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from http import HTTPStatus
-from src.schemas import Message, UserDB, UserPublic, UserSchema
+from src.schemas import Message, UserDB, UserList, UserPublic, UserSchema
 
 app = FastAPI(title='Study FastAPI', version='0.1.0')
 database = []
@@ -50,3 +50,8 @@ def create_user(user: UserSchema):
 # I don't like the lack of visibility
 
 # breakpoint() # to debug
+
+
+@app.get('/users/', status_code=HTTPStatus.OK, response_model=UserList)
+def read_users():
+    return {'users': database}
