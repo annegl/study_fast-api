@@ -13,7 +13,7 @@ def test_root():
     assert response.json() == {
         'message': 'Hello, you',
         'description': 'This is me learning FastAPI! =)',
-    }  # Asset
+    }  # Assert
 
 
 def test_contact():
