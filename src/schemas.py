@@ -1,7 +1,7 @@
 from pydantic import BaseModel
-
-# To create contracts that enable data validation and documentation
 from typing import Optional
+
+# pydantic: to create contracts that enable data validation and documentation
 
 
 class Message(BaseModel):
