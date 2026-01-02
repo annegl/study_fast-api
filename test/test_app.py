@@ -16,9 +16,20 @@ def test_root():
     }  # Assert
 
 
-def test_contact():
+def test_creat_user():
     client = TestClient(app)
-    response = client.get('/contact/')
+    response = client.post(
+        '/users/',
+        json={
+            'username': 'alice',
+            'email': 'alice@example.com',
+            'password': 'test123',
+        },
+    )
 
-    assert response.status_code == HTTPStatus.OK
-    assert response.json() == {'contact': 'https://github.com/annegl/'}
+    assert response.status_code == HTTPStatus.CREATED
+    assert response.json() == {
+        'id': 1,
+        'username': 'alice',
+        'email': 'alice@example.com',
+    }
