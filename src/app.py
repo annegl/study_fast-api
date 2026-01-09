@@ -1,16 +1,27 @@
 from fastapi import FastAPI, HTTPException
 from http import HTTPStatus
-from src.schemas import Message, UserDB, UserList, UserPublic, UserSchema
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import Session
+from src.models import User
+from src.schemas import Message, UserPublic, UserSchema
+from src.settings import Settings
 
 app = FastAPI(title='Study FastAPI', version='0.1.0')
-database = []
+
+engine = create_engine(
+    Settings().DATABASE_URL
+)  # Database engine: manages the low-level connection to the DB.
+session = Session(
+    engine
+)  # ORM session: manages Python objects and translates them into SQL.
 
 
-def check_user_exists(user_id: int):
-    if user_id < 1 or user_id > len(database):
-        raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail='user_id not found'
+def check_user_exists(user: UserSchema):
+    return session.scalar(
+        select(User).where(
+            User.username == user.username, User.email == user.email
         )
+    )
 
 
 @app.get('/', status_code=HTTPStatus.OK, response_model=Message)
@@ -37,51 +48,60 @@ def read_root():
 
 
 @app.post('/users/', status_code=HTTPStatus.CREATED, response_model=UserPublic)
+# response_model returns UserPublic, not UserSchema, to protect password
 def create_user(user: UserSchema):
-    user_with_id = UserDB(
+    if check_user_exists(user):
+        session.close()
+        raise HTTPException(
+            status_code=HTTPStatus.CONFLICT,
+            detail='User name or e-mail already exist',
+        )
+
+    new_user = User(
         username=user.username,
         email=user.email,
         password=user.password,
-        id=len(database) + 1,
     )
 
-    database.append(user_with_id)
+    try:
+        session.add(new_user)
+        session.commit()
+        session.refresh(new_user)
+        return new_user
+    except Exception as e:
+        session.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        session.close()
 
-    return user_with_id
-
-
-# response_model returns UserPublic, not UserSchema, to protect password
-
-# model_dump returns a dict of the user's att which can be unpacked into UserDB
-# user_with_id = UserDB(**user.model_dump(), id=len(database) + 1)
 
 # breakpoint() # to debug
 
-
-@app.get('/users/', status_code=HTTPStatus.OK, response_model=UserList)
-def read_users():
-    return {'users': database}
-
-
-@app.put(
-    '/users/{user_id}', status_code=HTTPStatus.OK, response_model=UserPublic
-)
-def update_user(user_id: int, user: UserSchema):
-    check_user_exists(user_id)
-    user_with_id = UserDB(**user.model_dump(), id=user_id)
-    database[user_id - 1] = user_with_id
-    return user_with_id
+# TODO: Update this logic to use the database instead of the list
+# @app.get('/users/', status_code=HTTPStatus.OK, response_model=UserList)
+# def read_users():
+#     return {'users': database}
 
 
-@app.get('/users/{user_id}', response_model=UserPublic)
-def get_user(user_id: int):
-    check_user_exists(user_id)
-    return database[user_id - 1]
+# @app.put(
+#     '/users/{user_id}', status_code=HTTPStatus.OK, response_model=UserPublic
+# )
+# def update_user(user_id: int, user: UserSchema):
+#     check_user_exists(user_id)
+#     user_with_id = UserDB(**user.model_dump(), id=user_id)
+#     database[user_id - 1] = user_with_id
+#     return user_with_id
 
 
-@app.delete(
-    '/users/{user_id}', status_code=HTTPStatus.OK, response_model=UserPublic
-)
-def delete_user(user_id: int):
-    check_user_exists(user_id)
-    return database.pop(user_id - 1)
+# @app.get('/users/{user_id}', response_model=UserPublic)
+# def get_user(user_id: int):
+#     check_user_exists(user_id)
+#     return database[user_id - 1]
+
+
+# @app.delete(
+#     '/users/{user_id}', status_code=HTTPStatus.OK, response_model=UserPublic
+# )
+# def delete_user(user_id: int):
+#     check_user_exists(user_id)
+#     return database.pop(user_id - 1)
