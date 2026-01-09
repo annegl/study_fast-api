@@ -61,7 +61,7 @@ exclude = [
 [tool.ruff.lint]
 preview = true
 select = ['I', 'F', 'E', 'W', 'PL', 'PT']
-ignore = ['E402', 'F811', "ERA001"]
+ignore = ['E402', 'F811', 'ERA001']
 
 [tool.ruff.lint.isort]
 no-sections = true
