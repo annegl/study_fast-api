@@ -77,7 +77,7 @@ def create_user(user: UserSchema):
 
 # breakpoint() # to debug
 
-# TODO: Update this logic to use the database instead of the list
+# TODO: Update this logict
 # @app.get('/users/', status_code=HTTPStatus.OK, response_model=UserList)
 # def read_users():
 #     return {'users': database}
